@@ -1,0 +1,13 @@
+{
+  "name": "nido-gourmet-backend",
+  "version": "0.0.1",
+  "description": "API de nido gourmet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Humberto De La Cruz Dominguez",
+  "license": "ISC",
+  "type": "commonjs"
+}
