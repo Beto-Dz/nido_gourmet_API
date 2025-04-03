@@ -17,11 +17,6 @@ const floodgateSchema = new Schema({
 });
 
 const feederSchema = new Schema({
-  serialNumber: {
-    // Changed from "serie" to "serialNumber"
-    type: String,
-    required: true,
-  },
   isActive: {
     // Changed from "active" to "isActive"
     type: Boolean,
@@ -45,7 +40,7 @@ const feederSchema = new Schema({
   floodgates: {
     1: floodgateSchema,
     2: floodgateSchema,
-    3: floodgateSchema,
+    // 3: floodgateSchema,
   },
   user: {
     type: Schema.Types.ObjectId,

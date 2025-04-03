@@ -16,7 +16,6 @@ const userScheema = Schema({
   phone: {
     type: String,
     required: true,
-    unique: true,
   },
   email: {
     type: String,
@@ -24,6 +23,10 @@ const userScheema = Schema({
     unique: true,
   },
   password: {
+    type: String,
+    required: true,
+  },
+  rol: {
     type: String,
     required: true,
   },

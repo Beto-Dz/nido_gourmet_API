@@ -17,6 +17,8 @@ dbConnection();
 
 app.use("/api/auth", require("./routes/AuthRoutes"));
 
+app.use("/api/device", require("./routes/FeederRoutes"));
+
 app.listen(process.env.PORT, () => {
   console.log("server up");
 });

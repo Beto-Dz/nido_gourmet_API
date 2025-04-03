@@ -16,11 +16,12 @@ const validarJWT = (req, resp = response, next) => {
   try {
     // obteniendo las propiedades del payload de jwt. primero verifica que sea un token valido
     // si es asi obtiene el payload desestructuramos el uid y name
-    const { uid, name } = jwt.verify(token, process.env.SECRENT_JWT_SEED);
+    const { uid, name, rol } = jwt.verify(token, process.env.SECRENT_JWT_SEED);
 
     // modificando la request para andjuntarle el id y el name del usuario que hizo la request
     req.uid = uid;
     req.name = name;
+    req.rol = rol;
   } catch (error) {
     return resp.status(401).json({
       ok: false,

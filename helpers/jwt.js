@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-const generateJWT = (uid, name) => {
+const generateJWT = (uid, name, rol) => {
   return new Promise((resolve, reject) => {
     // carga del JWT
-    const payload = { uid, name };
+    const payload = { uid, name, rol };
 
     // creando jwt
     // primero la informacion a enviar dentro del jwt

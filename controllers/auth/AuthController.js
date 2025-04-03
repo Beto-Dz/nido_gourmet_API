@@ -21,7 +21,7 @@ const registerUser = async (req, res = response) => {
     }
 
     // creando nuevo usuario
-    usuario = new User(req.body);
+    usuario = new User({ ...req.body, rol: "user" });
 
     // encriptar password
     const salt = bcrypt.genSaltSync();
@@ -31,7 +31,7 @@ const registerUser = async (req, res = response) => {
     await usuario.save();
 
     // generar JWT
-    const token = await generateJWT(usuario.id, usuario.name);
+    const token = await generateJWT(usuario.id, usuario.name, usuario.rol);
 
     return res.status(201).json({
       ok: true,
@@ -74,7 +74,7 @@ const login = async (req, res = response) => {
     }
 
     // generar JWT
-    const token = await generateJWT(usuario.id, usuario.name);
+    const token = await generateJWT(usuario.id, usuario.name, usuario.rol);
 
     return res.json({
       ok: true,
@@ -94,11 +94,11 @@ const login = async (req, res = response) => {
 // funcion para renovar el token de un usuario
 const renew = async (req, res = response) => {
   // obteniendo el id y name de la request odificada por e middleware
-  const { uid, name } = req;
+  const { uid, name, rol } = req;
 
   try {
     // generando un nuevo token
-    const token = await generateJWT(uid, name);
+    const token = await generateJWT(uid, name, rol);
 
     return res.json({
       ok: true,
