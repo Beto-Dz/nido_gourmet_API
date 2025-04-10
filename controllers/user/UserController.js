@@ -1,3 +1,5 @@
+const User =  require('../../models/userModel.js');
+
 const getInfo = (req, res) => {
   const params = req.query;
 
@@ -9,5 +11,5 @@ const getInfo = (req, res) => {
 };
 
 module.exports = {
-  getInfo,
+  getInfo
 };

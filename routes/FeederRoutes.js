@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { createFeeder, activeFeeder, updateFeeder, partialUpdateFeeder, registerVisit, getVisits } = require("../controllers/feeder/FeederController");
+const { createFeeder, activeFeeder, updateFeeder, partialUpdateFeeder, registerVisit, getVisits, getFeedersByUser, getFeedersByID } = require("../controllers/feeder/FeederController");
 const { validarJWT } = require("../middlewares/validar-jwt");
 const { validarCampos } = require("../middlewares/validar-campos");
 
@@ -73,5 +73,12 @@ router.get(
   ],
   getVisits
 );
+
+router.get('/feeders', getFeedersByUser);
+
+
+router.get("/feeder/:id", getFeedersByID);
+
+
 
 module.exports = router;

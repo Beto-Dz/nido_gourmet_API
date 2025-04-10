@@ -13,6 +13,7 @@ const floodgateSchema = new Schema({
   friday: scheduleSchema,
   saturday: scheduleSchema,
   sunday: scheduleSchema,
+  foodLevel: Number,
   visits: [{ type: Date }], // Stores timestamps of visits
 });
 

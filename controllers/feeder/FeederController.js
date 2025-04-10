@@ -1,5 +1,6 @@
 const { response } = require("express");
 const feederModel = require("../../models/feederModel");
+const userModel = require("../../models/userModel");
 
 const createFeeder = async (req, res = response) => {
   try {
@@ -35,6 +36,7 @@ const createFeeder = async (req, res = response) => {
           friday: defaultSchedule,
           saturday: defaultSchedule,
           sunday: defaultSchedule,
+          foodLevel: 50,
           visits: [],
         },
         2: {
@@ -45,16 +47,7 @@ const createFeeder = async (req, res = response) => {
           friday: defaultSchedule,
           saturday: defaultSchedule,
           sunday: defaultSchedule,
-          visits: [],
-        },
-        3: {
-          monday: defaultSchedule,
-          tuesday: defaultSchedule,
-          wednesday: defaultSchedule,
-          thursday: defaultSchedule,
-          friday: defaultSchedule,
-          saturday: defaultSchedule,
-          sunday: defaultSchedule,
+          foodLevel: 50,
           visits: [],
         },
       },
@@ -80,7 +73,7 @@ const createFeeder = async (req, res = response) => {
 
 const activeFeeder = async (req, resp = response) => {
   // desestructurando el id del usuario
-  const { idFeeder } = req.body;
+  const { uuid } = req.body;
 
   try {
     // obteniendo el comdero de la db
@@ -305,9 +298,9 @@ const getVisits = async (req, res = response) => {
 
     // Si no se especifica una compuerta, devolver todas las visitas por compuerta
     const allVisits = {
-      "1": feeder.floodgates["1"].visits,
-      "2": feeder.floodgates["2"].visits,
-      "3": feeder.floodgates["3"].visits,
+      1: feeder.floodgates["1"].visits,
+      2: feeder.floodgates["2"].visits,
+      3: feeder.floodgates["3"].visits,
     };
 
     return res.json({
@@ -325,6 +318,69 @@ const getVisits = async (req, res = response) => {
   }
 };
 
+const getFeedersByUser = async (req, res) => {
+  try {
+    const { uid } = req;
+
+    const data = await feederModel.find({ user: uid });
+
+    if (!data) {
+      return res.status(404).json({
+        ok: false,
+        msg: "El usuario no tiene comederos actualmente",
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      msg: "Se han obtenido los comederos del cliente exitosamente",
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Ocurrió un error al obtener los comederos del usuario",
+      error,
+    });
+  }
+};
+
+const getFeedersByID = async (req, res) => {
+  const uid = req.params.id;
+
+  const userId = req.uid;
+
+  try {
+    const data = await feederModel.findById(uid);
+
+    if (!data) {
+      return res.status(404).json({
+        ok: false,
+        msg: "No se ha podido encontrar el comedero",
+      });
+    }
+
+    if (data.user._id != userId) {
+      console.log(data.user._id + " = " + userId);
+      return res.status(401).json({
+        ok: false,
+        msg: "No estas autorizado para recuperar la informacion del comedero",
+      });
+    }
+
+    return res.status(200).json({
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Ocurrió un error al obtener los comederos del usuario",
+      error,
+    });
+  }
+};
 
 module.exports = {
   createFeeder,
@@ -332,5 +388,7 @@ module.exports = {
   updateFeeder,
   partialUpdateFeeder,
   registerVisit,
-  getVisits
+  getVisits,
+  getFeedersByUser,
+  getFeedersByID,
 };
