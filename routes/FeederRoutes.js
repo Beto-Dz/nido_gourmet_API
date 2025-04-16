@@ -1,13 +1,10 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { createFeeder, activeFeeder, updateFeeder, partialUpdateFeeder, registerVisit, getVisits, getFeedersByUser, getFeedersByID } = require("../controllers/feeder/FeederController");
+const { createFeeder, activeFeeder, getFeedersByUser, getFeedersByID } = require("../controllers/feeder/FeederController");
 const { validarJWT } = require("../middlewares/validar-jwt");
 const { validarCampos } = require("../middlewares/validar-campos");
 
 const router = Router();
-
-// aplica el middleware de validar token para todas las rutas
-router.use(validarJWT);
 
 // endpoint para registrar un nuevo comedero
 router.post("/new", [], createFeeder);
@@ -25,59 +22,59 @@ router.patch(
 );
 
 // Endpoint para actualizar completamente un comedero (PUT)
-router.put(
-  "/",
-  [
-    check("idFeeder", "El ID del comedero es obligatorio").notEmpty(),
-    validarCampos,
-  ],
-  updateFeeder
-);
+// router.put(
+//   "/",
+//   [
+//     check("idFeeder", "El ID del comedero es obligatorio").notEmpty(),
+//     validarCampos,
+//   ],
+//   updateFeeder
+// );
 
-// Endpoint para actualización parcial de un comedero (PATCH)
-router.patch(
-  "/",
-  [
-    check("idFeeder", "El ID del comedero es obligatorio").notEmpty(),
-    validarCampos,
-  ],
-  partialUpdateFeeder
-);
+// // Endpoint para actualización parcial de un comedero (PATCH)
+// router.patch(
+//   "/",
+//   [
+//     check("idFeeder", "El ID del comedero es obligatorio").notEmpty(),
+//     validarCampos,
+//   ],
+//   partialUpdateFeeder
+// );
 
-// endpoint para registrar una visita en una compuerta del feeder
-router.post(
-  "/visit",
-  [
-    check("idFeeder", "El ID del comedero es obligatorio y debe tener al menos 12 caracteres")
-      .notEmpty()
-      .isLength({ min: 12 }),
-    check("floodgate", "Debes especificar la compuerta (1 | 2)")
-      .notEmpty()
-      .isIn(["1", "2"]),
-    validarCampos,
-  ],
-  registerVisit
-);
+// // endpoint para registrar una visita en una compuerta del feeder
+// router.post(
+//   "/visit",
+//   [
+//     check("idFeeder", "El ID del comedero es obligatorio y debe tener al menos 12 caracteres")
+//       .notEmpty()
+//       .isLength({ min: 12 }),
+//     check("floodgate", "Debes especificar la compuerta (1 | 2)")
+//       .notEmpty()
+//       .isIn(["1", "2"]),
+//     validarCampos,
+//   ],
+//   registerVisit
+// );
 
-// Endpoint para obtener las visitas de un comedero y una compuerta específica
-router.get(
-  "/visit",
-  [
-    check("idFeeder", "El ID del comedero es obligatorio y debe tener al menos 12 caracteres")
-      .notEmpty()
-      .isLength({ min: 12 }),
-    check("floodgate", "La compuerta debe ser 1, 2 o 3")
-      .optional()
-      .isIn(["1", "2", "3"]),
-    validarCampos,
-  ],
-  getVisits
-);
+// // Endpoint para obtener las visitas de un comedero y una compuerta específica
+// router.get(
+//   "/visit",
+//   [
+//     check("idFeeder", "El ID del comedero es obligatorio y debe tener al menos 12 caracteres")
+//       .notEmpty()
+//       .isLength({ min: 12 }),
+//     check("floodgate", "La compuerta debe ser 1, 2 o 3")
+//       .optional()
+//       .isIn(["1", "2", "3"]),
+//     validarCampos,
+//   ],
+//   getVisits
+// );
 
-router.get('/feeders', getFeedersByUser);
+router.get('/feeders', [validarJWT] ,getFeedersByUser);
 
 
-router.get("/feeder/:id", getFeedersByID);
+router.get("/feeder/:id", [validarJWT], getFeedersByID);
 
 
 

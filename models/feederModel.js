@@ -27,17 +27,6 @@ const feederSchema = new Schema({
     type: Number,
     required: true,
   },
-  location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-  },
   floodgates: {
     1: floodgateSchema,
     2: floodgateSchema,
