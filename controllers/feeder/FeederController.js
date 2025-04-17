@@ -164,7 +164,7 @@ const partialUpdateFeeder = async (feeder) => {
   try {
     let feeder = await feederModel.findById(feederId);
 
-    // Si el request incluye floodgates, fusionar los datos en lugar de sobrescribir
+    // // Si el request incluye floodgates, fusionar los datos en lugar de sobrescribir
     if (updateFields.floodgates) {
       Object.keys(updateFields.floodgates).forEach((gate) => {
         if (!feeder.floodgates[gate]) {
@@ -188,6 +188,28 @@ const partialUpdateFeeder = async (feeder) => {
     console.log(error);
   }
 };
+
+const updateFloodgates = async (feederUpdate) => {
+
+  // desestructurando la informacion recibida
+  const { feederId, floodgate, day, startTime, endTime } = feederUpdate;
+
+  try {
+    // busqueda en base de datos
+    let feeder = await feederModel.findById(feederId);
+
+    // acyualización de la compuerta
+    feeder.floodgates[floodgate][day] = {startTime, endTime};
+
+    // guardando
+    await feeder.save();
+
+    return feeder;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
 // const registerVisit = async (req, res = response) => {
 //   const { idFeeder, floodgate } = req.body;
@@ -361,6 +383,7 @@ module.exports = {
   activeFeeder,
   // updateFeeder,
   partialUpdateFeeder,
+  updateFloodgates,
   // registerVisit,
   // getVisits,
   getFeedersByUser,

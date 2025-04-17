@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
 const { simpleValidationJWT } = require("../../helpers/simpleValidationJWT");
-const { partialUpdateFeeder } = require("../feeder/FeederController");
+const { partialUpdateFeeder, updateFloodgates } = require("../feeder/FeederController");
 
 // Creamos el servidor WebSocket (sin servidor HTTP propio).
 const wss = new WebSocket.Server({ noServer: true });
@@ -56,6 +56,11 @@ wss.on("connection", (ws) => {
             case "close_servos":
           enviarMensaje(message, ws);
           break;
+        case "update_floodgate":
+          updateFloodgates(mensajeFormated).then((feederUpdated) => 
+            enviarMensaje(JSON.stringify(feederUpdated), ws)
+          );
+        break;
       }
     } catch (error) {}
   });
@@ -72,7 +77,6 @@ const enviarMensaje = (message, ws) => {
   clients.forEach((client) => {
     if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN) {
       client.socket.send(message);
-      console.log(`📤 ${message}`)
     }
   });
 };

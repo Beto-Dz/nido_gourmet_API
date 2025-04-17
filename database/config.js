@@ -15,8 +15,11 @@ const dbConnection = async () => {
       const salt = bcrypt.genSaltSync();
       const password = bcrypt.hashSync("betodelac@gmail.com", salt);
 
+      const userId = new mongoose.Types.ObjectId("67f5771b429380cae76be741");
+      const feederId = new mongoose.Types.ObjectId("67f57821c597ab31781c074d");
+
       const user = new userModel({
-        id: "67fe7a8331b9fdc7ecc32ffc",
+        _id: userId,
         name: "humberto",
         paternalSurname: "de la cruz",
         maternalSurname: "dominguez",
@@ -35,7 +38,7 @@ const dbConnection = async () => {
       };
 
       const feeder = new feederModel({
-        id: "67fe7b704f6d37f7949e908a",
+        _id: feederId,
         isActive: false,
         batteryLevel: 0,
         floodgates: {
@@ -62,7 +65,7 @@ const dbConnection = async () => {
             visits: [],
           },
         },
-        user: user.id,
+        user: userId,
       });
 
       await feeder.save();
