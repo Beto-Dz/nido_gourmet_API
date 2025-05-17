@@ -1,6 +1,9 @@
 const WebSocket = require("ws");
 const { simpleValidationJWT } = require("../../helpers/simpleValidationJWT");
-const { partialUpdateFeeder, updateFloodgates } = require("../feeder/FeederController");
+const {
+  partialUpdateFeeder,
+  updateFloodgates,
+} = require("../feeder/FeederController");
 
 // Creamos el servidor WebSocket (sin servidor HTTP propio).
 const wss = new WebSocket.Server({ noServer: true });
@@ -38,11 +41,16 @@ wss.on("connection", (ws) => {
           const { ok, uid, name, rol } = simpleValidationJWT(
             mensajeFormated.token
           );
-          clientId = uid;
+
+          if (mensajeFormated?.movil) {
+            clientId = uid + "_movil";
+          } else {
+            clientId = uid;
+          }
           clientType = "user";
           clients = clients.filter((c) => c.id !== clientId);
           clients.push({ id: clientId, socket: ws });
-          // console.log(`🧑 Usuario autenticado: ${name} (${rol})`);
+          console.log(`🧑 Usuario autenticado: ${name} (${rol})`);
           break;
         case "update_status":
           delete mensajeFormated.type;
@@ -50,17 +58,17 @@ wss.on("connection", (ws) => {
             enviarMensaje(JSON.stringify(feederUpdated), ws)
           );
           break;
-          case "open_servo":
-            case "close_servo":
-            case "open_servos":
-            case "close_servos":
+        case "open_servo":
+        case "close_servo":
+        case "open_servos":
+        case "close_servos":
           enviarMensaje(message, ws);
           break;
         case "update_floodgate":
-          updateFloodgates(mensajeFormated).then((feederUpdated) => 
+          updateFloodgates(mensajeFormated).then((feederUpdated) =>
             enviarMensaje(JSON.stringify(feederUpdated), ws)
           );
-        break;
+          break;
       }
     } catch (error) {}
   });
