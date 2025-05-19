@@ -53,10 +53,10 @@ wss.on("connection", (ws) => {
           console.log(`🧑 Usuario autenticado: ${name} (${rol})`);
           break;
         case "update_status":
-          delete mensajeFormated.type;
-          partialUpdateFeeder(mensajeFormated).then((feederUpdated) =>
-            enviarMensaje(JSON.stringify(feederUpdated), ws)
-          );
+          partialUpdateFeeder(mensajeFormated).then((feederUpdated) => {
+            const data = { type: mensajeFormated.type, ...feederUpdated._doc };
+            enviarMensaje(JSON.stringify(data), ws);
+          });
           break;
         case "open_servo":
         case "close_servo":
