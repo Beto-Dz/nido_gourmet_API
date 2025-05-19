@@ -3,6 +3,7 @@ const { simpleValidationJWT } = require("../../helpers/simpleValidationJWT");
 const {
   partialUpdateFeeder,
   updateFloodgates,
+  registerVisit,
 } = require("../feeder/FeederController");
 
 // Creamos el servidor WebSocket (sin servidor HTTP propio).
@@ -69,8 +70,17 @@ wss.on("connection", (ws) => {
             enviarMensaje(JSON.stringify(feederUpdated), ws)
           );
           break;
+        case "register_visit":
+          registerVisit({ ...mensajeFormated }).then((feederUpdated) => {
+            const data = { type: "update_status", ...feederUpdated._doc };
+            enviarMensaje(JSON.stringify(data), ws);
+          });
+          console.log("ejecucion de la visita");
+          break;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   // Si un cliente se desconecta

@@ -112,52 +112,7 @@ const activeFeeder = async (req, resp = response) => {
   }
 };
 
-// 📌 PUT - Actualiza completamente el comedero
-// const updateFeeder = async (req, res = response) => {
-//   const { idFeeder, isActive, batteryLevel, location, floodgates, user } =
-//     req.body;
-
-//   try {
-//     let feeder = await feederModel.findById(idFeeder);
-
-//     if (!feeder) {
-//       return res.status(404).json({
-//         ok: false,
-//         msg: "No se pudo encontrar el comedero",
-//       });
-//     }
-
-//     if (feeder.user.toString() !== req.uid) {
-//       return res.status(401).json({
-//         ok: false,
-//         msg: `No estas autorizado para actualizar el comedero ${feeder.user.toString()} y ${
-//           req.uid
-//         }`,
-//       });
-//     }
-
-//     feeder.isActive = isActive;
-//     feeder.batteryLevel = batteryLevel;
-//     feeder.location = location;
-//     feeder.floodgates = floodgates;
-
-//     await feeder.save();
-
-//     return res.json({
-//       ok: true,
-//       msg: "Comedero actualizado correctamente",
-//       feeder,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       ok: false,
-//       msg: "Ocurrió un error al actualizar el comedero",
-//       error,
-//     });
-//   }
-// };
-
-// // 📌 PATCH - Actualiza parcialmente el comedero
+// 📌 PATCH - Actualiza parcialmente el comedero
 const partialUpdateFeeder = async (feeder) => {
   const { feederId, ...updateFields } = feeder;
 
@@ -190,7 +145,6 @@ const partialUpdateFeeder = async (feeder) => {
 };
 
 const updateFloodgates = async (feederUpdate) => {
-
   // desestructurando la informacion recibida
   const { feederId, floodgate, day, startTime, endTime } = feederUpdate;
 
@@ -199,7 +153,7 @@ const updateFloodgates = async (feederUpdate) => {
     let feeder = await feederModel.findById(feederId);
 
     // acyualización de la compuerta
-    feeder.floodgates[floodgate][day] = {startTime, endTime};
+    feeder.floodgates[floodgate][day] = { startTime, endTime };
 
     // guardando
     await feeder.save();
@@ -210,109 +164,21 @@ const updateFloodgates = async (feederUpdate) => {
   }
 };
 
+const registerVisit = async ({ idFeeder, floodgate_number }) => {
+  try {
+    // Buscar el feeder por ID
+    let feeder = await feederModel.findById(idFeeder);
 
-// const registerVisit = async (req, res = response) => {
-//   const { idFeeder, floodgate } = req.body;
+    // Registrar la visita con la fecha y hora actual
+    feeder.floodgates[floodgate_number].visits.push(new Date());
 
-//   try {
-//     // Buscar el feeder por ID
-//     let feeder = await feederModel.findById(idFeeder);
+    await feeder.save();
 
-//     if (!feeder) {
-//       return res.status(404).json({
-//         ok: false,
-//         msg: "No se encontró el comedero",
-//       });
-//     }
-
-//     if (feeder.user.toString() !== req.uid || req.rol !== "admin") {
-//       return res.status(401).json({
-//         ok: false,
-//         msg: `No estas autorizado para actualizar el comedero ${feeder.user.toString()} y ${
-//           req.uid
-//         }`,
-//       });
-//     }
-
-//     // Verificar si la compuerta existe en el feeder
-//     if (!feeder.floodgates[floodgate]) {
-//       return res.status(400).json({
-//         ok: false,
-//         msg: `La compuerta ${floodgate} no existe en este comedero`,
-//       });
-//     }
-
-//     // Registrar la visita con la fecha y hora actual
-//     feeder.floodgates[floodgate].visits.push(new Date());
-
-//     await feeder.save();
-
-//     return res.json({
-//       ok: true,
-//       msg: `Visita registrada en la compuerta ${floodgate}`,
-//       feeder,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       ok: false,
-//       msg: "Ocurrió un error al registrar la visita",
-//       error,
-//     });
-//   }
-// };
-
-// const getVisits = async (req, res = response) => {
-//   const { idFeeder, floodgate } = req.query;
-
-//   try {
-//     // Buscar el feeder por ID
-//     let feeder = await feederModel.findById(idFeeder);
-
-//     if (!feeder) {
-//       return res.status(404).json({
-//         ok: false,
-//         msg: "No se encontró el comedero",
-//       });
-//     }
-
-//     // Si se especifica una compuerta, devolver solo sus visitas
-//     if (floodgate) {
-//       if (!feeder.floodgates[floodgate]) {
-//         return res.status(400).json({
-//           ok: false,
-//           msg: `La compuerta ${floodgate} no existe en este comedero`,
-//         });
-//       }
-
-//       return res.json({
-//         ok: true,
-//         msg: `Visitas registradas en la compuerta ${floodgate}`,
-//         visits: feeder.floodgates[floodgate].visits,
-//       });
-//     }
-
-//     // Si no se especifica una compuerta, devolver todas las visitas por compuerta
-//     const allVisits = {
-//       1: feeder.floodgates["1"].visits,
-//       2: feeder.floodgates["2"].visits,
-//       3: feeder.floodgates["3"].visits,
-//     };
-
-//     return res.json({
-//       ok: true,
-//       msg: "Visitas registradas en todas las compuertas",
-//       visits: allVisits,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       ok: false,
-//       msg: "Ocurrió un error al obtener las visitas",
-//       error,
-//     });
-//   }
-// };
+    return feeder;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const getFeedersByUser = async (req, res) => {
   try {
@@ -384,7 +250,7 @@ module.exports = {
   // updateFeeder,
   partialUpdateFeeder,
   updateFloodgates,
-  // registerVisit,
+  registerVisit,
   // getVisits,
   getFeedersByUser,
   getFeedersByID,
